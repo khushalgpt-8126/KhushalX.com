@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khushalcreates — Portfolio</title>
+  <meta name="description" content="Portfolio of Khushal Gupta — graphic designer, web developer, Python programmer & speedcuber.">
+  <meta property="og:title" content="Khushalcreates_ — Graphic Designer & Developer">
+  <meta property="og:description" content="13-year-old designer, web developer and speedcuber creating fast, clean interfaces.">
+  <meta property="og:image" content="/social-preview.webp">
+  <meta property="og:type" content="website">
+<link rel="icon" href="data:,">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js" defer></script>
+  <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
+
+
+
+  <style>
+    :root{
+      --bg: #050608;
+      --card: #0f1720;
+      --accent: #f37012;
+      --muted: #9aa7b2;
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.03);
+      --max-width: 1100px;
+      --shadow-1: 0 14px 40px rgba(0,0,0,0.6);
+    }
+
+    /* .card{background:var(--glass);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 14px 48px rgba(0,0,0,0.5);transition:all .5s;opacity:0;transform:translateY(20px);} */
+
+    .portrait:hover{
+      transform:rotateX(3deg) rotateY(-3deg) scale(1.03);
+    }
+
+    .portrait{
+      border-radius:14px;
+      overflow:hidden;
+      transition:transform .45s;
+    }
+
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Poppins',Arial,system-ui,sans-serif;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(243,112,18,0.06), transparent 8%), linear-gradient(180deg,var(--bg) 0%, #000 100%);
+      color:#e8eef2;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .wrap{max-width:var(--max-width);margin:0 auto;padding:28px}
+
+    /* NAV */
+    nav{background:transparent;padding:10px 0;position:sticky;top:12px;z-index:60}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logo{font-weight:700;color:#fff;text-decoration:none;font-size:20px;letter-spacing:0.3px}
+    .nav-links{cursor:pointer;display:flex;gap:16px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:500}
+    .nav-links a:hover{color:#fff;background:var(--glass)}
+    .cta{background:var(--accent);color:#070607;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600}
+    .cta:hover{opacity:0.95}
+       nav {
+  background: rgba(255, 255, 255, 0.08); /* semi-transparent white */
+  backdrop-filter: blur(10px);            /* blur background behind it */
+  -webkit-backdrop-filter: blur(10px);    /* for Safari */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* subtle border */
+  border-radius: 12px;                     /* rounded corners if needed */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2); /* soft shadow */
+}
+
+
+    
+    nav a:hover {
+      color: #00eaff;
+    }
+        nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+        .hamburger{display:none;background:transparent;border:0;padding:8px;border-radius:8px}
+    .hamburger svg{filter:drop-shadow(0 3px 6px rgba(0,0,0,0.6))}
+
+    /* HERO layout */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;padding:44px 0}
+    .intro h1{font-size:48px;margin:0 0 10px;color:#fff}
+    .intro p.lead{color:var(--muted);font-size:18px;margin:0 0 18px}
+    .badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{background:var(--glass);padding:8px 12px;border-radius:999px;font-weight:600;color:#fff}
+
+    /* 3D scene */
+    /* wrong: hero-card { ... } */
+.hero-card {
+  width: 360px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+  transition: transform 0.2s ease-out;
+}
+.hero-card img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+.hero-card .name { margin-top: 12px; font-size: 22px; font-weight: 700; }
+.hero-card .role { font-size: 14px; color: #aaa; margin-top: 4px; }
+
+    /* subtle floating animation */
+    @keyframes floatY{0%{transform:translateY(-6px)}50%{transform:translateY(6px)}100%{transform:translateY(-6px)}}
+    .hero-card{animation:floatY 6s ease-in-out infinite}
+
+    /* Sections */
+    section{padding:48px 0}
+    h2.section-title{font-size:28px;margin:0 0 12px;color:#fff}
+    p.lead-muted{color:var(--muted);margin:0 0 18px}
+
+    /* Grid cards */
+    .grid{cursor:pointer;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid var(--glass-2);min-height:140px;display:flex;flex-direction:column;gap:8px;transition:transform 260ms ease, box-shadow 260ms ease}
+    .card h3{margin:0;font-size:18px}
+    .card p{color:var(--muted);margin:0;font-size:14px}
+    .card:hover{transform:translateY(-8px) rotateX(2deg);box-shadow:0 28px 60px rgba(0,0,0,0.65)}
+
+    /* Skills */
+    .skills{cursor:pointer;display:flex;gap:12px;flex-wrap:wrap}
+    .skill{cursor:pointer;background:var(--glass);padding:8px 10px;border-radius:8px;font-weight:600}
+
+    /* Contact */
+    .contact-grid{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+    .contact-card{background:var(--card);padding:18px;border-radius:12px;border:1px solid var(--glass-2)}
+    .contact-actions a{display:inline-block;margin-right:10px;margin-top:10px;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:600}
+    .contact-actions a.mail{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+    .contact-actions a.wh{background:var(--accent);color:#070607}
+
+    /* Footer */
+    footer{padding:26px 0;color:var(--muted);font-size:14px;text-align:center}
+
+    /* Responsive */
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr 320px}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:720px){
+      .wrap{padding:18px}
+      .nav-links{display:none}
+      .hamburger{display:inline-block}
+      .hero{grid-template-columns:1fr}
+      .hero-card{order:-1;}
+      .grid{grid-template-columns:1fr}
+      .contact-grid{grid-template-columns:1fr}
+    }
+
+    /* Hide nav links on mobile initially */
+@media (max-width:720px){
+  .nav-links {
+    display: none; /* hidden by default */
+    flex-direction: column;
+    position: absolute;
+    right: 18px;
+    top: 64px;
+    background: rgba(0,0,0,0.85);
+    padding: 12px;
+    border-radius: 10px;
+    z-index: 1000;
+  }
+
+  .hamburger {
+    display: inline-block;
+    cursor: pointer;
+  }
+}
+
+
+    /* small utilities */
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .underline{height:3px;width:64px;background:linear-gradient(90deg,var(--accent),#ffb47a);border-radius:8px;margin-top:12px}
+    a:focus{outline:3px solid rgba(243,112,18,0.2);outline-offset:3px}
+    hero-card {
+  width: 360px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+  transition: transform 0.2s ease-out;
+}
+.hero-card img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+.hero-card .name { margin-top: 12px; font-size: 22px; font-weight: 700; }
+.hero-card .role { font-size: 14px; color: #aaa; margin-top: 4px; }
+
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+    <nav>
+      <div class="nav-inner">
+        <a class="logo" href="#">Khushalcreates_</a>
+
+        <div class="nav-links" role="navigation" aria-label="Primary">
+          <a href="#experience">Experience</a>
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <a href="#contact">Contact</a>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px">
+          <a class="cta" href="#contact">Hire me</a>
+
+          <button class="hamburger" aria-label="Open menu" id="menuBtn">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero" id="about">
+      <div class="intro">
+        <h1>Hi, I'm <span style="color:var(--accent)">Khushal Gupta</span></h1>
+        <p class="lead">13‑year‑old designer • Python programmer • Web developer • UI/UX • Speedcuber</p>
+        <div class="badges" aria-hidden="true">
+          <span class="badge">Figma</span>
+          <span class="badge">Photopea</span>
+          <span class="badge">VS Code</span>
+          <span class="badge">Blender</span>
+        </div>
+
+        <p class="lead-muted">I build clean interfaces, fast websites and creative identity systems — focused on clarity, speed and quality. Started my journey in 2025 and I love learning new tools every day.</p>
+
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="cta" href="#contact">Work with me</a>
+          <a style="padding:10px 12px;border-radius:8px;background:transparent;border:1px solid var(--glass-2);color:var(--muted);text-decoration:none;font-weight:600" href="#experience">My work</a>
+        </div>
+      </div>
+
+      <aside class="scene" aria-label="Profile card">
+  <div class="floating-wrap">
+    <div class="hero-card floating-card" id="card">
+      <div class="inner">
+<img class="portrait" src="khushal.jpg" alt="Khushal Gupta" width="350" height="350" loading="lazy">
+        <div class="name">Khushal Gupta</div>
+        <div class="role">Graphic Designer · Web Dev · Python Enthusiast</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <a class="contact-mini" href="https://www.instagram.com/Khushalcreates_" target="_blank" rel="noopener" style="text-decoration:none;color:var(--muted);font-weight:600">@Khushalcreates_</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+    </header>
+
+    <!-- SERVICES -->
+    <section id="services" aria-labelledby="servicesTitle">
+      <h2 id="servicesTitle" class="section-title">Services</h2>
+      <div class="underline"></div>
+      <p class="lead-muted">Logo design, posters, web development, Python scripts, UI/UX and more. Affordable, professional and fast turnarounds.</p>
+
+      <div class="grid" style="margin-top:18px">
+        <article class="card">
+          <h3>Logo & Brand Identity</h3>
+          <p>Concept‑to‑final logo, color palette and brand assets ready for web and print.</p>
+        </article>
+        <article class="card">
+          <h3>Web & Frontend</h3>
+          <p>Responsive websites, landing pages, and prototypes built with clean HTML/CSS and best practices.</p>
+        </article>
+        <article class="card">
+          <h3>Graphics & Posters</h3>
+          <p>Social media posts, posters and marketing graphics optimised for engagement.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" aria-labelledby="xpTitle">
+      <h2 id="xpTitle" class="section-title">Experience & Skills</h2>
+      <p class="lead-muted">I learned programming and design while creating personal projects and sharing progress online.</p>
+
+      <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-top:18px">
+        <div class="card" style="min-width:260px;flex:1">
+          <h3>Programming</h3>
+          <p>HTML, CSS, basic JavaScript, Python (projects and scripts).</p>
+          <div style="margin-top:12px" class="skills">
+            <span class="skill">Python</span>
+            <span class="skill">HTML</span>
+            <span class="skill">CSS</span>
+            <span class="skill">VS Code</span>
+          </div>
+        </div>
+
+        <div class="card" style="min-width:260px;flex:1">
+          <h3>Design</h3>
+          <p>Logo, posters, UI/UX, Figma and Photopea work with focus on visual hierarchy.</p>
+          <div style="margin-top:12px" class="skills">
+            <span class="skill">Figma</span>
+            <span class="skill">Photopea</span>
+            <span class="skill">Typography</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" aria-labelledby="contactTitle">
+      <h2 id="contactTitle" class="section-title">Contact</h2>
+      <p class="lead-muted">If you like my work — let's discuss your project. I'm available for small business and student budgets.</p>
+
+      <div class="contact-grid" style="margin-top:18px">
+        <div class="contact-card">
+          <h3 style="margin-top:0">Get in touch</h3>
+          <p class="muted">Email me, message on WhatsApp or call. I usually respond within a day.</p>
+
+          <div style="margin-top:12px" class="contact-actions">
+            <a class="mail" href="mailto:sarveshgupta70373@gmail.com">Email: sarveshgupta70373@gmail.com</a>
+            <a class="wh" href="https://wa.me/917037359049" target="_blank" rel="noopener">WhatsApp: +91 7037359049</a>
+            <div style="margin-top:12px;color:var(--muted);font-size:13px">Prefer calls? <a href="tel:+917037359049" style="color:var(--accent);text-decoration:none">Call me</a></div>
+          </div>
+        </div>
+
+        <aside class="contact-card" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
+          <h3 style="margin:0 0 8px">Hire me</h3>
+          <p class="muted">Share project details and your budget — I'll reply with a simple plan and quote.</p>
+
+          <ul style="margin-top:12px;color:var(--muted);line-height:1.6">
+            <li>Quick logo: 1–2 days</li>
+            <li>Simple website: 3–7 days</li>
+            <li>Social graphics: 1 day</li>
+          </ul>
+
+          <a class="cta" href="mailto:sarveshgupta70373@gmail.com" style="margin-top:14px">Start conversation</a>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <div style="max-width:var(--max-width);margin:0 auto;padding:16px;color:var(--muted)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>&copy; 2025 Khushalcreates_</div>
+          <div style="color:var(--muted)">Designed & Developed by Khushal Gupta</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+ <script defer>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* -------------------- HERO-CARD TILT -------------------- */
+  const heroCard = document.getElementById('card');
+  if(heroCard){
+    let pointer = {x:0, y:0};
+    let raf = null;
+    let state = {rx:0, ry:0};
+
+    const rect = () => heroCard.getBoundingClientRect();
+
+    function updateTilt(){
+      const r = rect();
+      const centerX = r.left + r.width/2;
+      const centerY = r.top + r.height/2;
+      const targetRX = -((pointer.y - centerY)/r.height)*18;
+      const targetRY = ((pointer.x - centerX)/r.width)*18;
+
+      state.rx += (targetRX - state.rx) * 0.12;
+      state.ry += (targetRY - state.ry) * 0.12;
+
+      heroCard.style.transform = `rotateX(${state.rx}deg) rotateY(${state.ry}deg)`;
+      raf = requestAnimationFrame(updateTilt);
+    }
+
+    function onPointerMove(e){
+      const ev = e.touches ? e.touches[0] : e;
+      pointer.x = ev.clientX;
+      pointer.y = ev.clientY;
+      if(!raf) updateTilt();
+    }
+
+    function resetTilt(){
+      cancelAnimationFrame(raf);
+      raf = null;
+      state.rx = 0; state.ry = 0;
+      heroCard.style.transform = '';
+    }
+
+    heroCard.addEventListener('pointermove', onPointerMove);
+    heroCard.addEventListener('pointerenter', onPointerMove);
+    heroCard.addEventListener('pointerleave', resetTilt);
+  }
+
+  /* -------------------- MOBILE MENU -------------------- */
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.querySelector('.nav-links');
+
+  function openMenu(){
+    navLinks.style.display = 'flex';
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.position = 'absolute';
+    navLinks.style.right = '18px';
+    navLinks.style.top = '64px';
+    navLinks.style.background = 'rgba(0,0,0,0.85)';
+    navLinks.style.padding = '12px';
+    navLinks.style.borderRadius = '10px';
+  }
+
+  function closeMenu(){
+    navLinks.style.display = '';
+    navLinks.style.position = '';
+  }
+
+  menuBtn?.addEventListener('click', ()=>{
+    if(getComputedStyle(navLinks).display === 'flex') closeMenu();
+    else openMenu();
+  });
+
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.addEventListener('click', ()=>{ if(window.innerWidth <= 720) closeMenu(); });
+  });
+
+  document.addEventListener('click', e=>{
+    if(window.innerWidth > 720) return;
+    if(!navLinks || !menuBtn) return;
+    if(e.target === menuBtn || menuBtn.contains(e.target)) return;
+    if(e.target === navLinks || navLinks.contains(e.target)) return;
+    closeMenu();
+  });
+
+  /* -------------------- SMOOTH SCROLL -------------------- */
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', ev=>{
+      const href = a.getAttribute('href');
+      if(href === '#') return;
+      const target = document.querySelector(href);
+      if(target){
+        ev.preventDefault();
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+
+  /* -------------------- INTERSECTION OBSERVER FOR NAV ACTIVE -------------------- */
+  const navAnchors = document.querySelectorAll('.nav-links a');
+  const sections = Array.from(navAnchors).map(a => document.querySelector(a.getAttribute('href')));
+
+  if(sections.length){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(!entry.target.id) return;
+        const link = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+        if(link) link.classList.toggle('active', entry.isIntersecting);
+      });
+    }, {threshold:0.5});
+    sections.forEach(s=>s && io.observe(s));
+  }
+
+  /* -------------------- DEFERRED GALAXY BACKGROUND -------------------- */
+  setTimeout(() => {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'bg-canvas';
+    document.body.appendChild(canvas);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.z = 8;
+
+    const renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Particles
+    const particleCount = 2000;
+    const positions = new Float32Array(particleCount * 3);
+    for(let i=0;i<particleCount;i++){
+      positions[i*3] = (Math.random()-0.5)*50;
+      positions[i*3+1] = (Math.random()-0.5)*30;
+      positions[i*3+2] = (Math.random()-0.5)*50;
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    const material = new THREE.PointsMaterial({color:0xffffff, size:0.05, transparent:true, opacity:0.8});
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    scene.add(new THREE.AmbientLight(0xffffff,0.3));
+    const dir = new THREE.DirectionalLight(0xffffff,0.8);
+    dir.position.set(5,5,5);
+    scene.add(dir);
+
+    let mouseX=0, mouseY=0;
+    window.addEventListener('mousemove', e=>{
+      mouseX = (e.clientX/window.innerWidth)*2 - 1;
+      mouseY = (e.clientY/window.innerHeight)*2 - 1;
+    });
+
+    window.addEventListener('resize', ()=>{
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate(){
+      requestAnimationFrame(animate);
+      particles.rotation.y += 0.001;
+      particles.rotation.x += 0.0005;
+      camera.position.x += (mouseX*2 - camera.position.x)*0.05;
+      camera.position.y += (-mouseY*1 - camera.position.y)*0.05;
+      camera.lookAt(0,0,0);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+  }, 200); // small delay so HTML paints first
+
+});
+</script>
+
+</body>
+</html>
